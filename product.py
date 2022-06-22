@@ -20,6 +20,7 @@ ROOT = FILE.parents[0]
 root_weights = ROOT/'weights/yolov5s.pt'
 
 def write_time():
+    print('\a')
     seconds = time.time()
     local_time = time.ctime(seconds)
     f = open('./data/Records/log.txt',"a")
@@ -73,6 +74,14 @@ def run_yolov5_single_cam(weights,multisource,outname,run_on_single_cam = True):
 
             ret, frame = cap.read()
             results = model(frame)
+            detect_data = results.pandas().xyxy[0]
+            if weights == root_weights:
+                presence = 'person'in detect_data["name"].tolist()
+            else:
+                presence = 'human' in detect_data["name"].tolist()
+            
+            if presence:
+                write_time()
             frame = np.squeeze(results.render())
             
             video_writer.write(frame)
