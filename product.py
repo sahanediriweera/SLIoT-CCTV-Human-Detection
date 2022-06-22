@@ -1,4 +1,5 @@
 import argparse
+from cmath import e
 from pyexpat import model
 import string
 from cv2 import VideoWriter
@@ -27,18 +28,17 @@ def send_actual_email(outname):
     f.close()
 
 def check_log_exist(outname):
-    logname = 'email_log_{}.txt'.format(outname)
-    list_dir = listdir(os.path.join('data','emaillog'))
-    return logname in list_dir
+    return os.path.exists('./data/emaillog/email_log_{}.txt'.format(outname))
+    
 
 def send_email(outname):
     log_existance = check_log_exist(outname)
 
     if log_existance:
-        f = open('./data/emaillog/email_log_{}.txt',"r")
+        f = open('./data/emaillog/email_log_{}.txt'.format(outname),"r")
         email_data = f.read()
         f.close()
-        email_array = email_data.split(",")
+        email_array = email_data.split("\n")
         last_time = email_array.__getitem__(len(email_array)-1)
         last_time = float(last_time)
         now_time = time.time()
@@ -48,6 +48,12 @@ def send_email(outname):
             send_actual_email(outname)
         else:
             print("1 hour hasn't passes yet")
+
+    else:
+        f = open('./data/emaillog/email_log_{}.txt',"a")
+        f.write('{}'.format(time.time()))
+        f.close()
+        send_actual_email(outname)
 
 
 
@@ -114,6 +120,7 @@ def run_yolov5_single_cam(weights,multisource,outname,run_on_single_cam = True):
             
             if presence:
                 write_time(outname)
+                send_email(outname)
             frame = np.squeeze(results.render())
             
             video_writer.write(frame)
@@ -121,7 +128,8 @@ def run_yolov5_single_cam(weights,multisource,outname,run_on_single_cam = True):
                 cv2.imshow('Frame',frame)
                 if cv2.waitKey(10) & 0xFF == ord('q'):
                     break
-        except:
+        except e:
+            print(e)
             break
 
     cap.release()
