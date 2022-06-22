@@ -39,7 +39,7 @@ def send_email(outname):
         email_data = f.read()
         f.close()
         email_array = email_data.split(",")
-        last_time = email_array[len(email_array)-]
+        last_time = email_array.__getitem__(len(email_array)-1)
         last_time = float(last_time)
         now_time = time.time()
         time_dif = now_time - last_time
