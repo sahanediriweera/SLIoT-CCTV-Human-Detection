@@ -19,11 +19,43 @@ ROOT = FILE.parents[0]
 
 root_weights = ROOT/'weights/yolov5s.pt'
 
-def write_time():
+def send_actual_email(outname):
+    print("email send")
+    f = open("./data/emaillog/email_log_{}.txt".format(outname),"a")
+    f.write('\n')
+    f.write('{}'.format(time.time()))
+    f.close()
+
+def check_log_exist(outname):
+    logname = 'email_log_{}.txt'.format(outname)
+    list_dir = listdir(os.path.join('data','emaillog'))
+    return logname in list_dir
+
+def send_email(outname):
+    log_existance = check_log_exist(outname)
+
+    if log_existance:
+        f = open('./data/emaillog/email_log_{}.txt',"r")
+        email_data = f.read()
+        f.close()
+        email_array = email_data.split(",")
+        last_time = email_array[len(email_array)-]
+        last_time = float(last_time)
+        now_time = time.time()
+        time_dif = now_time - last_time
+
+        if(time_dif>3600.0):
+            send_actual_email(outname)
+        else:
+            print("1 hour hasn't passes yet")
+
+
+
+def write_time(outname):
     print('\a')
     seconds = time.time()
     local_time = time.ctime(seconds)
-    f = open('./data/Records/log.txt',"a")
+    f = open('./data/Records/log_{}.txt'.format(outname),"a")
     f.write('\n')
     f.write('{},{}'.format(local_time,seconds))
     f.close()
@@ -81,7 +113,7 @@ def run_yolov5_single_cam(weights,multisource,outname,run_on_single_cam = True):
                 presence = 'human' in detect_data["name"].tolist()
             
             if presence:
-                write_time()
+                write_time(outname)
             frame = np.squeeze(results.render())
             
             video_writer.write(frame)
