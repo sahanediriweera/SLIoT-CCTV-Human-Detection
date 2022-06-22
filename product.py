@@ -50,7 +50,7 @@ def send_email(outname):
             print("1 hour hasn't passes yet")
 
     else:
-        f = open('./data/emaillog/email_log_{}.txt',"a")
+        f = open('./data/emaillog/email_log_{}.txt'.format(outname),"a")
         f.write('{}'.format(time.time()))
         f.close()
         send_actual_email(outname)
@@ -159,6 +159,11 @@ def run_fast_single_cam(multisource,outname):
 
         boxes, pred_clas = get_prediction(frame,fast_model,threshold=thres)
         print('Frame predictions ready')
+
+        human_presence = 'person' in pred_clas
+        if human_presence:
+            write_time(outname)
+            send_email(outname)
 
         for i in range(len(boxes)):
             if pred_clas[i] == 'person':
