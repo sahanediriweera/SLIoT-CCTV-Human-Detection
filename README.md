@@ -15,8 +15,8 @@ Before running the application, ensure you have the following installed:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/cctv-human-detection.git
-   cd cctv-human-detection
+   git clone https://github.com/sahanediriweera/SLIoT-CCTV-Human-Detection
+   cd SLIoT-CCTV-Human-Detection
    ```
 
 2. Install dependencies:
